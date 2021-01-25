@@ -7,7 +7,17 @@ import { makeStyles } from '@material-ui/core'
 
 const useStyles = makeStyles(() => ({
   imgClass: {
-    cursor: 'pointer'
+    cursor: 'pointer',
+    marginBottom: '10px'
+  },
+  infiniteScrollComponent: {
+    width: '100%',
+    maxWidth: '1100px',
+    minWidth: '800px',
+    margin: '20px auto'
+  },
+  photoContainer: {
+    display: 'inline-block',
   }
 }))
 let finalPhotos = []
@@ -21,7 +31,7 @@ const GridComponent = () => {
   const [hasMore, setHasMore] = React.useState(true)
 
   React.useEffect(() => {
-    getPhotos(0, 10).then((res) => {
+    getPhotos(0, 12).then((res) => {
       finalPhotos = res.results
       setPhotoList(res.results)
       setTotalCount(res.total)
@@ -43,18 +53,23 @@ const GridComponent = () => {
       setHasMore(false)
       return false
     }
-    getPhotos(currentPage, 10).then((result) => {
+    getPhotos(currentPage, 12).then((result) => {
       const finalList = finalPhotos.concat(result.results)
       finalPhotos = finalList
-      setPhotoList(finalList)
+      if (JSON.stringify(photoList) !== JSON.stringify(finalList))
+        setPhotoList(finalList)
     })
-  }, [setPhotoList, currentPage, totalCount])
+  }, [setPhotoList, currentPage, totalCount, photoList])
 
 
   const handleLoadMore = React.useCallback(() => {
-    setCurrentPage(currentPage + 1)
+    let finalPage = currentPage + 1
+    if (currentPage !== finalPage) {
+      setCurrentPage(finalPage)
+    }
     fetchMoreData()
-  }, [fetchMoreData])
+  }, [fetchMoreData, currentPage])
+
 
   return <>
     <InfiniteScroll
@@ -66,10 +81,11 @@ const GridComponent = () => {
         <p style={{ textAlign: 'center' }}>
           <b>All the Images are loaded.</b>
         </p>
-      }>
+      }
+      className={classes.infiniteScrollComponent}>
       <div className="grid">
         {photoList.map((photo, index) => {
-          return <div key={index}>
+          return <div key={index} className={classes.photoContainer}>
             <img className={classes.imgClass} key={index} onClick={() => openSlideshow(index)}
               src={photo.urls?.thumb} alt={photo.alt_description} />
           </div>

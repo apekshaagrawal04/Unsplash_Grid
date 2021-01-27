@@ -4,6 +4,7 @@ import 'react-image-lightbox/style.css';
 import { getPhotos } from '../api/photosApi'
 import InfiniteScroll from "react-infinite-scroll-component";
 import { makeStyles } from '@material-ui/core'
+import ImageCard from './ImageCard'
 
 const useStyles = makeStyles(() => ({
   imgClass: {
@@ -14,7 +15,9 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     maxWidth: '1100px',
     minWidth: '800px',
-    margin: '20px auto'
+    margin: '20px auto',
+    height: 'auto',
+    overflow: 'inherit'
   },
   photoContainer: {
     display: 'inline-block',
@@ -82,13 +85,11 @@ const GridComponent = () => {
           <b>All the Images are loaded.</b>
         </p>
       }
+      style={{ overflow: 'inherit' }}
       className={classes.infiniteScrollComponent}>
-      <div className="grid">
+      <div className="image-list">
         {photoList.map((photo, index) => {
-          return <div key={index} className={classes.photoContainer}>
-            <img className={classes.imgClass} key={index} onClick={() => openSlideshow(index)}
-              src={photo.urls?.thumb} alt={photo.alt_description} />
-          </div>
+          return <ImageCard key={index} index={index} openSlideshow={openSlideshow} image={photo} />
         })}
       </div>
     </InfiniteScroll>
